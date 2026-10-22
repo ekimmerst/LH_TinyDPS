@@ -99,7 +99,7 @@ local function Place()
     if type(p) == "table" and type(p.x) == "number" and type(p.y) == "number" then
         frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", p.x, p.y)
     elseif LH_StatsFrame then
-        frame:SetPoint("TOP", LH_StatsFrame, "BOTTOM", 0, -6)
+        frame:SetPoint("TOP", LH_StatsFrame, "BOTTOM", 0, -16)
     else
         frame:SetPoint("TOPRIGHT", Minimap or UIParent, "BOTTOMRIGHT", 0, -12)
     end
