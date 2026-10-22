@@ -1,5 +1,7 @@
 <h1 style="color: #d9a94b;">LH TinyDPS</h1>
 
+<p>View damage and healing from WoW's built-in meter data in a compact, customizable window with fight and overall totals.</p>
+
 <p>A small damage and healing window for players who want a quick read without a second full-size meter. LH TinyDPS uses WoW's built-in damage meter data in its own compact display; it does not change Blizzard's meter window.</p>
 
 <h2 style="color: #73c9c4;">What you can see</h2>
