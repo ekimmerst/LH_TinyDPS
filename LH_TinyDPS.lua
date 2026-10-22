@@ -35,7 +35,7 @@ local fonts = {
     { "Skurri", "Fonts\\SKURRI.TTF" },
 }
 local outlines = { "", "OUTLINE", "THICKOUTLINE", "MONOCHROME,OUTLINE" }
-local HEADER_HEIGHT = 34
+local HEADER_HEIGHT = 30
 local rows = {}
 local frame, minimapButton, resizeHandle, notice, modeButton, standardBorder, headerBackground, headerLine
 local currentSources, currentSession, currentMax = {}, nil, 0
@@ -516,13 +516,13 @@ local function CreateWindow()
     titleLayer:SetFrameLevel(frame:GetFrameLevel() + 3)
     titleLayer:EnableMouse(false)
     frame.title = titleLayer:CreateFontString(nil, "OVERLAY")
-    frame.title:SetPoint("LEFT", frame, "TOPLEFT", 8, -20)
+    frame.title:SetPoint("LEFT", frame, "TOPLEFT", 8, -15)
     frame.title:SetJustifyH("LEFT")
     frame.title:SetWordWrap(false)
     local function HeaderButton(label, width, rightOffset, tooltip, onClick)
         local button = CreateFrame("Button", nil, frame, "BackdropTemplate")
         button:SetSize(width, 16)
-        button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", rightOffset, -13)
+        button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", rightOffset, -8)
         button:SetFrameLevel(frame:GetFrameLevel() + 4)
         button:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8",
             edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
