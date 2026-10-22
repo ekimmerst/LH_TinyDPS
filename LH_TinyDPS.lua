@@ -155,9 +155,34 @@ local function ClassColor(source)
         end
     end
 end
-local function ShortName(name)
-    if IsSecret(name) then return name end
+local shortNameCache = {}
+local function FirstName(name)
     return name:match("^([^%s%-]+)") or name
+end
+local function ShortName(name, source)
+    if not IsSecret(name) then
+        local short = FirstName(name)
+        if source and source.sourceGUID and not IsSecret(source.sourceGUID) then
+            shortNameCache[source.sourceGUID] = short
+        end
+        return short
+    end
+    -- In combat the name is secret and cannot be parsed, so resolve it another way.
+    if source then
+        if source.isLocalPlayer and not IsSecret(source.isLocalPlayer) then
+            local own = UnitName("player")
+            if own then return own end
+        end
+        local guid = source.sourceGUID
+        if guid and not IsSecret(guid) then
+            if shortNameCache[guid] then return shortNameCache[guid] end
+            local fromGuid = UnitNameFromGUID and UnitNameFromGUID(guid)
+            if fromGuid and not IsSecret(fromGuid) then return FirstName(fromGuid) end
+        end
+    end
+    local ok, short = pcall(Ambiguate, name, "short")
+    if ok and short then return short end
+    return name
 end
 local function RowValue(source)
     local db = DB()
@@ -389,7 +414,7 @@ local function Refresh()
         if source then
             row:Show()
             row.rank:SetText(tostring(row.index) .. ".")
-            row.name:SetText(ShortName(source.name))
+            row.name:SetText(ShortName(source.name, source))
             row.value:SetText(RowValue(source))
             row.bar:SetMinMaxValues(0, currentMax)
             row.bar:SetValue(source.totalAmount)
