@@ -103,8 +103,10 @@ local function Build(category, layout)
         function(value) return Addon:GetOutlineNames()[math.floor(value + 0.5)] end)
     Checkbox(category, "classColors", "Class-colored bars", "Use source class colors where available.")
     Checkbox(category, "dimClassColors", "Dim class colors", "Reduce the brightness of class-colored bars.")
-    Checkbox(category, "classText", "Class-colored names instead of bars", "Use class colors for names and the chosen bar color for bars.")
+    Checkbox(category, "classText", "Class-colored names instead of bars", "Use class colors for names and the chosen bar color for bars. Rank and values keep the configured text color.")
     for _, group in ipairs({
+        { title = "Bar text color", prefix = "text" },
+        { title = "Bar text shadow", prefix = "shadow" },
         { title = "Window background", prefix = "background" },
         { title = "Bar color", prefix = "bar" },
         { title = "Thin border color", prefix = "border" },
@@ -114,8 +116,14 @@ local function Build(category, layout)
             Slider(category, group.prefix .. color[1], color[2], 0, 1, 0.05,
                 "Color channel from 0 to 100 percent.", function(value) return string.format("%.0f%%", value * 100) end)
         end
-        Slider(category, group.prefix .. "Alpha", "Opacity", 0, 1, 0.05,
+        Slider(category, group.prefix .. "Alpha", group.prefix == "shadow" and "Shadow strength" or "Opacity", 0, 1, 0.05,
             "Opacity from 0 to 100 percent.", function(value) return string.format("%.0f%%", value * 100) end)
+        if group.prefix == "shadow" then
+            Slider(category, "shadowOffsetX", "Horizontal shadow offset", -4, 4, 1,
+                "Move the bar text shadow left or right in UI units.")
+            Slider(category, "shadowOffsetY", "Vertical shadow offset", -4, 4, 1,
+                "Move the bar text shadow down or up in UI units.")
+        end
     end
 
     Header(layout, "Visibility")

@@ -22,6 +22,9 @@ local defaults = {
     backgroundR = panelR, backgroundG = panelG, backgroundB = panelB,
     barR = 0.3, barG = 0.55, barB = 0.8,
     borderR = 0.65, borderG = 0.59, borderB = 0.45,
+    textR = 1, textG = 1, textB = 1, textAlpha = 1,
+    shadowR = 0, shadowG = 0, shadowB = 0, shadowAlpha = 1,
+    shadowOffsetX = 2, shadowOffsetY = -2,
     minimapAngle = 225,
 }
 
@@ -83,9 +86,10 @@ local function GetSession()
     end
 end
 local function SetFont(fontString)
-    fontString:SetFont(fonts[DB().font][2], DB().textSize, outlines[DB().outline])
-    fontString:SetShadowColor(0, 0, 0, 1)
-    fontString:SetShadowOffset(2, -2)
+    local db = DB()
+    fontString:SetFont(fonts[db.font][2], db.textSize, outlines[db.outline])
+    fontString:SetShadowColor(db.shadowR, db.shadowG, db.shadowB, db.shadowAlpha)
+    fontString:SetShadowOffset(db.shadowOffsetX, db.shadowOffsetY)
 end
 local function SavePosition()
     local x, y = frame:GetCenter()
@@ -337,6 +341,8 @@ local function Layout()
             SetFont(row.rank)
             SetFont(row.name)
             SetFont(row.value)
+            row.rank:SetTextColor(db.textR, db.textG, db.textB, db.textAlpha)
+            row.value:SetTextColor(db.textR, db.textG, db.textB, db.textAlpha)
             if not row.slotShown then row:Hide() end
         end
     end
@@ -388,7 +394,11 @@ local function Refresh()
             local r, g, b = DB().barR, DB().barG, DB().barB
             if DB().classColors and not DB().classText and cr then r, g, b = cr, cg, cb end
             row.bar:SetStatusBarColor(r, g, b, DB().barAlpha)
-            if DB().classText and cr then row.name:SetTextColor(cr, cg, cb) else row.name:SetTextColor(1, 1, 1) end
+            if DB().classText and cr then
+                row.name:SetTextColor(cr, cg, cb, DB().textAlpha)
+            else
+                row.name:SetTextColor(DB().textR, DB().textG, DB().textB, DB().textAlpha)
+            end
         else
             row:Hide()
         end
@@ -572,7 +582,8 @@ function Addon:Set(key, value)
     if kind == "number" then
         local ranges = { width = {130,500}, height = {60,600}, barHeight = {10,30}, barSpacing = {0,8},
             visibleBars = {1,40}, textSize = {7,18}, textOffset = {-5,5}, tooltipSpells = {0,20}, tooltipTargets = {0,20},
-            reportLength = {1,20}, font = {1,#fonts}, outline = {1,#outlines} }
+            reportLength = {1,20}, font = {1,#fonts}, outline = {1,#outlines},
+            shadowOffsetX = {-4,4}, shadowOffsetY = {-4,4} }
         local range = ranges[key]
         if range then value = Clamp(math.floor(value + 0.5), range[1], range[2])
         else value = Clamp(value, 0, 1) end
@@ -731,11 +742,13 @@ events:SetScript("OnEvent", function(_, event, name)
         end
         for key, range in pairs({ width = {130,500}, height = {60,600}, barHeight = {10,30},
             barSpacing = {0,8}, visibleBars = {1,40}, textSize = {7,18}, textOffset = {-5,5}, tooltipSpells = {0,20},
-            tooltipTargets = {0,20}, reportLength = {1,20}, font = {1,#fonts}, outline = {1,#outlines} }) do
+            tooltipTargets = {0,20}, reportLength = {1,20}, font = {1,#fonts}, outline = {1,#outlines},
+            shadowOffsetX = {-4,4}, shadowOffsetY = {-4,4} }) do
             LH_TinyDPSDB[key] = Clamp(math.floor(LH_TinyDPSDB[key] + 0.5), range[1], range[2])
         end
         for _, key in ipairs({ "backgroundAlpha", "barAlpha", "borderAlpha", "backgroundR", "backgroundG",
-            "backgroundB", "barR", "barG", "barB", "borderR", "borderG", "borderB" }) do
+            "backgroundB", "barR", "barG", "barB", "borderR", "borderG", "borderB",
+            "textR", "textG", "textB", "textAlpha", "shadowR", "shadowG", "shadowB", "shadowAlpha" }) do
             LH_TinyDPSDB[key] = Clamp(LH_TinyDPSDB[key], 0, 1)
         end
         if LH_TinyDPSDB.mode ~= "damage" and LH_TinyDPSDB.mode ~= "healing" then LH_TinyDPSDB.mode = "damage" end
