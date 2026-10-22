@@ -8,7 +8,7 @@ if PANEL_BACKGROUND_COLOR then
 end
 
 local defaults = {
-    enabled = true, mode = "damage", session = "overall", width = 190, height = 113,
+    enabled = true, mode = "damage", session = "overall", width = 190, height = 125,
     barHeight = 16, barSpacing = 1, visibleBars = 5, textSize = 10, textOffset = 0,
     showRank = false, showAmount = false, showRate = false, showPercent = true, showSelfOnly = false,
     automaticValues = true,
@@ -35,8 +35,9 @@ local fonts = {
     { "Skurri", "Fonts\\SKURRI.TTF" },
 }
 local outlines = { "", "OUTLINE", "THICKOUTLINE", "MONOCHROME,OUTLINE" }
+local HEADER_HEIGHT = 34
 local rows = {}
-local frame, minimapButton, resizeHandle, notice, modeButton, standardBorder
+local frame, minimapButton, resizeHandle, notice, modeButton, standardBorder, headerBackground, headerLine
 local currentSources, currentSession, currentMax = {}, nil, 0
 local selectedSessionID, scrollOffset, moving, sizing = nil, 0, nil, nil
 local initialized, pendingRefresh = false, false
@@ -314,10 +315,12 @@ local function Layout()
     frame:SetSize(db.width, db.height)
     frame:SetBackdropColor(db.backgroundR, db.backgroundG, db.backgroundB, db.backgroundAlpha)
     frame:SetBackdropBorderColor(db.borderR, db.borderG, db.borderB, db.borderStyle == "thin" and db.borderAlpha or 0)
+    headerBackground:SetHeight(HEADER_HEIGHT - 2)
+    headerBackground:SetColorTexture(db.backgroundR, db.backgroundG, db.backgroundB, db.backgroundAlpha)
     standardBorder:SetSize(db.width * 2, db.height * 2)
     standardBorder:SetShown(db.borderStyle == "standard")
     standardBorder:SetAlpha(db.borderAlpha)
-    local slots = math.min(db.visibleBars, math.max(1, math.floor((db.height - 28) / (db.barHeight + db.barSpacing))))
+    local slots = math.min(db.visibleBars, math.max(1, math.floor((db.height - HEADER_HEIGHT - 4) / (db.barHeight + db.barSpacing))))
     for i = 1, math.max(slots, #rows) do
         local row = rows[i] or (i <= slots and CreateRow(i))
         if row then
@@ -326,7 +329,7 @@ local function Layout()
             if db.growUpwards then
                 row:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 4, 5 + (i - 1) * (db.barHeight + db.barSpacing))
             else
-                row:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -24 - (i - 1) * (db.barHeight + db.barSpacing))
+                row:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -HEADER_HEIGHT - (i - 1) * (db.barHeight + db.barSpacing))
             end
             row.slotShown = i <= slots
             row.rank:ClearAllPoints()
@@ -470,18 +473,31 @@ local function CreateWindow()
     standardBorder:SetFrameLevel(frame:GetFrameLevel() + 2)
     standardBorder:EnableMouse(false)
     NineSliceUtil.ApplyLayoutByName(standardBorder, "ButtonFrameTemplateNoPortrait")
+    local lineLayer = CreateFrame("Frame", nil, frame)
+    lineLayer:SetAllPoints()
+    lineLayer:SetFrameLevel(frame:GetFrameLevel() + 5)
+    lineLayer:EnableMouse(false)
+    headerLine = lineLayer:CreateTexture(nil, "OVERLAY")
+    headerLine:SetColorTexture(0.62, 0.5, 0.2, 0.9)
+    headerLine:SetHeight(1)
+    headerLine:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -HEADER_HEIGHT + 2)
+    headerLine:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -HEADER_HEIGHT + 2)
+    headerBackground = frame:CreateTexture(nil, "BACKGROUND", nil, 1)
+    headerBackground:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -2)
+    headerBackground:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
+    headerBackground:SetHeight(HEADER_HEIGHT - 2)
     local titleLayer = CreateFrame("Frame", nil, frame)
     titleLayer:SetAllPoints()
     titleLayer:SetFrameLevel(frame:GetFrameLevel() + 3)
     titleLayer:EnableMouse(false)
     frame.title = titleLayer:CreateFontString(nil, "OVERLAY")
-    frame.title:SetPoint("LEFT", frame, "TOPLEFT", 6, -11)
+    frame.title:SetPoint("LEFT", frame, "TOPLEFT", 8, -20)
     frame.title:SetJustifyH("LEFT")
     frame.title:SetWordWrap(false)
     local function HeaderButton(label, width, rightOffset, tooltip, onClick)
         local button = CreateFrame("Button", nil, frame, "BackdropTemplate")
         button:SetSize(width, 16)
-        button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", rightOffset, -4)
+        button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", rightOffset, -13)
         button:SetFrameLevel(frame:GetFrameLevel() + 4)
         button:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8",
             edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
@@ -697,7 +713,7 @@ events:SetScript("OnEvent", function(_, event, name)
         if name ~= ADDON_NAME then return end
         LH_TinyDPSDB = type(LH_TinyDPSDB) == "table" and LH_TinyDPSDB or {}
         if LH_TinyDPSDB.layoutVersion ~= 2 then
-            if LH_TinyDPSDB.height == 180 then LH_TinyDPSDB.height = defaults.height end
+            if LH_TinyDPSDB.height == 180 then LH_TinyDPSDB.height = defaults.height - 16 end
             if LH_TinyDPSDB.visibleBars == 10 then LH_TinyDPSDB.visibleBars = defaults.visibleBars end
             if LH_TinyDPSDB.backgroundR == 0.045 and LH_TinyDPSDB.backgroundG == 0.045
                 and LH_TinyDPSDB.backgroundB == 0.06 and LH_TinyDPSDB.backgroundAlpha == 0.82 then
@@ -710,6 +726,22 @@ events:SetScript("OnEvent", function(_, event, name)
                 LH_TinyDPSDB.borderB, LH_TinyDPSDB.borderAlpha = defaults.borderB, defaults.borderAlpha
             end
             LH_TinyDPSDB.layoutVersion = 2
+        end
+        if LH_TinyDPSDB.headerHeightVersion == nil then
+            if type(LH_TinyDPSDB.height) == "number" then
+                LH_TinyDPSDB.height = LH_TinyDPSDB.height + 16
+            end
+            LH_TinyDPSDB.headerHeightVersion = 3
+        elseif LH_TinyDPSDB.headerHeightVersion == 1 then
+            if type(LH_TinyDPSDB.height) == "number" then
+                LH_TinyDPSDB.height = LH_TinyDPSDB.height + 12
+            end
+            LH_TinyDPSDB.headerHeightVersion = 3
+        elseif LH_TinyDPSDB.headerHeightVersion == 2 then
+            if type(LH_TinyDPSDB.height) == "number" then
+                LH_TinyDPSDB.height = LH_TinyDPSDB.height + 4
+            end
+            LH_TinyDPSDB.headerHeightVersion = 3
         end
         if not LH_TinyDPSDB.appearanceVersion then
             if LH_TinyDPSDB.borderStyle == nil and type(LH_TinyDPSDB.showBorder) == "boolean" then
