@@ -171,25 +171,33 @@ local function ShortName(name, source)
     if source then
         if source.isLocalPlayer and not IsSecret(source.isLocalPlayer) then
             local own = UnitName("player")
-            if own then return own end
+            if own and not IsSecret(own) then return FirstName(own) end
         end
         local guid = source.sourceGUID
-        if guid and not IsSecret(guid) then
+        if UnitTokenFromGUID and (IsSecret(guid) or guid) then
+            local ok, unit = pcall(UnitTokenFromGUID, guid)
+            if ok and unit and not IsSecret(unit) then
+                local first = UnitName(unit)
+                if first and not IsSecret(first) then return FirstName(first) end
+            end
+        end
+        if not IsSecret(guid) and guid then
             if shortNameCache[guid] then return shortNameCache[guid] end
             local fromGuid = UnitNameFromGUID and UnitNameFromGUID(guid)
             if fromGuid and not IsSecret(fromGuid) then return FirstName(fromGuid) end
         end
     end
-    local ok, short = pcall(Ambiguate, name, "short")
-    if ok and short then return short end
-    return name
+    return "?"
 end
 local function RowValue(source)
     local db = DB()
     if db.automaticValues then
         if IsInGroup() then
             local total = currentSession and currentSession.totalAmount
-            if IsSecret(total) or IsSecret(source.totalAmount) then return "—" end
+            if IsSecret(total) or IsSecret(source.totalAmount) then
+                -- The bar can show the live share, but Lua cannot divide secret amounts.
+                return AbbreviateLargeNumbers(source.totalAmount)
+            end
             return total and total > 0 and string.format("%.0f%%", source.totalAmount / total * 100) or "0%"
         end
         if IsSecret(source.amountPerSecond) then return AbbreviateLargeNumbers(source.amountPerSecond) end
@@ -416,7 +424,7 @@ local function Refresh()
             row.rank:SetText(tostring(row.index) .. ".")
             row.name:SetText(ShortName(source.name, source))
             row.value:SetText(RowValue(source))
-            row.bar:SetMinMaxValues(0, currentMax)
+            row.bar:SetMinMaxValues(0, IsInGroup() and currentSession.totalAmount or currentMax)
             row.bar:SetValue(source.totalAmount)
             local cr, cg, cb = ClassColor(source)
             local r, g, b = DB().barR, DB().barG, DB().barB
