@@ -48,6 +48,16 @@ local function DB() return LH_TinyDPSDB end
 local function Clamp(value, minValue, maxValue)
     return math.max(minValue, math.min(maxValue, value))
 end
+local function DefaultWidth()
+    local source = LH_ExpBarFrame
+    if source and source.GetWidth and source.GetEffectiveScale then
+        local width = source:GetWidth() * source:GetEffectiveScale() / UIParent:GetEffectiveScale()
+        if type(width) == "number" and width > 0 then
+            return Clamp(math.floor(width + 0.5), 130, 500)
+        end
+    end
+    return defaults.width
+end
 local function Announce(message) print("LH_TinyDPS: " .. message) end
 local function Notify()
     if Addon.RefreshSettings then Addon:RefreshSettings() end
@@ -624,6 +634,20 @@ function Addon:Get(key)
     if db and db[key] ~= nil then return db[key] end
     return defaults[key]
 end
+function Addon:GetDefault(key) return defaults[key] end
+function Addon:GetDefaultWidth() return DefaultWidth() end
+function Addon:SetColor(prefix, r, g, b)
+    if not initialized then return end
+    if type(defaults[prefix .. "R"]) ~= "number" or type(defaults[prefix .. "G"]) ~= "number"
+        or type(defaults[prefix .. "B"]) ~= "number" or type(r) ~= "number"
+        or type(g) ~= "number" or type(b) ~= "number" then return end
+    local db = DB()
+    db[prefix .. "R"], db[prefix .. "G"], db[prefix .. "B"] =
+        Clamp(r, 0, 1), Clamp(g, 0, 1), Clamp(b, 0, 1)
+    Layout()
+    RequestRefresh()
+    Notify()
+end
 function Addon:Set(key, value)
     if not initialized or defaults[key] == nil then return end
     local kind = type(defaults[key])
@@ -650,12 +674,13 @@ function Addon:GetFontNames() return fonts end
 function Addon:GetOutlineNames() return { "None", "Thin", "Thick", "Monochrome" } end
 function Addon:ResetLayout()
     DB().position = nil
-    DB().width, DB().height, DB().visibleBars = defaults.width, defaults.height, defaults.visibleBars
+    DB().width, DB().height, DB().visibleBars = DefaultWidth(), defaults.height, defaults.visibleBars
     DB().barHeight, DB().barSpacing = defaults.barHeight, defaults.barSpacing
     Place(); Layout(); RequestRefresh(); Notify()
 end
 function Addon:ResetDefaults()
     for key, value in pairs(defaults) do DB()[key] = value end
+    DB().width = DefaultWidth()
     DB().position = nil
     selectedSessionID, scrollOffset = nil, 0
     Place(); UpdateMinimapButton(); UpdateVisibility(); Layout(); RequestRefresh(); Notify()
@@ -803,7 +828,9 @@ events:SetScript("OnEvent", function(_, event, name)
         end
         LH_TinyDPSDB.showBorder = nil
         for key, value in pairs(defaults) do
-            if type(LH_TinyDPSDB[key]) ~= type(value) then LH_TinyDPSDB[key] = value end
+            if type(LH_TinyDPSDB[key]) ~= type(value) then
+                LH_TinyDPSDB[key] = key == "width" and DefaultWidth() or value
+            end
         end
         for key, range in pairs({ width = {130,500}, height = {60,600}, barHeight = {10,30},
             barSpacing = {0,8}, visibleBars = {1,40}, textSize = {7,18}, textOffset = {-5,5}, tooltipSpells = {0,20},

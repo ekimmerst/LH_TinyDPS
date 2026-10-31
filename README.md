@@ -14,7 +14,7 @@
 
 <h2 style="color: #c78be6;">Make it yours</h2>
 
-<p>Open <strong>Options → AddOns → LH Tweaks → LH TinyDPS</strong> to move and resize the window, change bars, colors and text, or choose when it is visible. Its minimap button can toggle the window and open settings. You can also type <code>/lh_tinydps help</code> for commands. If LH Stats is installed, the default layout sits beneath it.</p>
+<p>Open <strong>Options → AddOns → LH Tweaks → LH TinyDPS</strong> to move and resize the window, change bars, colors and text, or choose when it is visible. Its minimap button can toggle the window and open settings. You can also type <code>/lh_tinydps help</code> for commands. If LH Stats is installed, the default layout sits beneath it. The default width matches LH ExpBar when installed; Reset layout applies its current width without changing a custom width until you reset.</p>
 
 <h2 style="color: #73c9c4;">More LH addons</h2>
 
@@ -46,6 +46,18 @@
 <p>Thanks to Sideshow and Talyrius for <a href="https://www.curseforge.com/wow/addons/tinydps">TinyDPS</a> and the inspiration behind a compact meter. LH TinyDPS is a separate display built around WoW's own meter data.</p>
 
 <h2 style="color: #73c9c4;">Changelog</h2>
+
+<p><strong>1.4.2 - Forever and Retail</strong></p>
+
+<ul>
+  <li>Bar text, shadow, background, bar and thin border colors now use the standard Options color picker. Opacity remains available beside each color.</li>
+</ul>
+
+<p><strong>1.4.1 - Forever and Retail</strong></p>
+
+<ul>
+  <li>New windows and layout resets use LH ExpBar's current width when it is installed. Existing custom widths remain saved.</li>
+</ul>
 
 <p><strong>1.4.0 - Forever</strong></p>
 

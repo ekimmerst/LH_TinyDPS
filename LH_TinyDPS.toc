@@ -1,10 +1,10 @@
-## Interface: 16001
+## Interface: 16001, 120105
 ## Title: LH TinyDPS
 ## Notes: A compact independent display for the built-in damage meter data.
 ## Author: LH_TinyDPS
-## Version: 1.4.0
+## Version: 1.4.2
 ## Dependencies: LH_Tweaks
-## OptionalDeps: LH_Stats
+## OptionalDeps: LH_Stats, LH_ExpBar
 ## Group: LH_Tweaks
 ## X-Part-Of: LH_Tweaks
 ## IconTexture: Interface\AddOns\LH_Tweaks\Icon.tga

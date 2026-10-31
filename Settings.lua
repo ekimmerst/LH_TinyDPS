@@ -15,10 +15,10 @@ end
 local function Button(layout, label, text, callback, tooltip)
     layout:AddInitializer(CreateSettingsButtonInitializer(label, text, callback, tooltip, true))
 end
-local function Checkbox(category, key, label, help)
+local function Checkbox(category, key, label, help, default)
     local name = "LH_TinyDPS_" .. key
     variables[#variables + 1] = name
-    local setting = Settings.RegisterProxySetting(category, name, "boolean", label, false,
+    local setting = Settings.RegisterProxySetting(category, name, "boolean", label, default or false,
         function() return Addon:Get(key) end,
         function(value) Addon:Set(key, value) end)
     Settings.CreateCheckbox(category, setting, help)
@@ -32,7 +32,8 @@ end
 local function Slider(category, key, label, low, high, step, help, format)
     local name = "LH_TinyDPS_" .. key
     variables[#variables + 1] = name
-    local setting = Settings.RegisterProxySetting(category, name, "number", label, low,
+    local default = key == "width" and Addon:GetDefaultWidth() or low
+    local setting = Settings.RegisterProxySetting(category, name, "number", label, default,
         function() return Addon:Get(key) end,
         function(value) Addon:Set(key, value) end)
     local options = Settings.CreateSliderOptions(low, high, step)
@@ -40,14 +41,29 @@ local function Slider(category, key, label, low, high, step, help, format)
         format or function(value) return string.format("%.0f", value) end)
     Settings.CreateSlider(category, setting, options, help)
 end
+
+local function ColorSwatch(category, prefix, label)
+    local name = "LH_TinyDPS_" .. prefix .. "Color"
+    variables[#variables + 1] = name
+    local function Color(get)
+        return CreateColor(get(prefix .. "R"), get(prefix .. "G"), get(prefix .. "B"), 1):GenerateHexColor()
+    end
+    local setting = Settings.RegisterProxySetting(category, name, "string", label,
+        Color(function(key) return Addon:GetDefault(key) end),
+        function() return Color(function(key) return Addon:Get(key) end) end,
+        function(value)
+            local picked = CreateColorFromHexString(value)
+            Addon:SetColor(prefix, picked:GetRGB())
+        end)
+    Settings.CreateColorSwatch(category, setting, "Choose the color. Use the slider below for opacity.")
+end
 local function Build(category, layout)
+    Header(layout, "Positioning")
+    Checkbox(category, "locked", "Lock TinyDPS window",
+        "Disable to left-drag the window or resize it using the small circle below its right edge. Enable to keep the current position and size.", true)
     Header(layout, "Display")
     Checkbox(category, "enabled", "Show LH TinyDPS", "Use a separate compact window powered by the game's damage meter data. The Blizzard window is not modified.")
-    Checkbox(category, "locked", "Lock window", "Unlock to left-drag the window or resize it using the small circle below its right edge.")
-    Button(layout, "Window position", "Unlock", function() Addon:Set("locked", false) end,
-        "Left-drag the window to move it; drag the circle to resize.")
-    Button(layout, "Window position", "Lock", function() Addon:Set("locked", true) end,
-        "Keep the current position and size.")
+    Header(layout, "Window appearance and size")
     local borderName = "LH_TinyDPS_borderStyle"
     variables[#variables + 1] = borderName
     local borderSetting = Settings.RegisterProxySetting(category, borderName, "string", "Window border", "thin",
@@ -63,7 +79,8 @@ local function Build(category, layout)
     Settings.CreateDropdown(category, borderSetting, BorderOptions,
         "Choose no border, the thin LH ExpBar border, or the standard Options dialog border.")
     Checkbox(category, "growUpwards", "Grow bars upwards", "Place the first result at the bottom of the window.")
-    Slider(category, "width", "Window width", 130, 500, 5, "Width in UI units.")
+    Slider(category, "width", "Window width", 130, 500, 5,
+        "Default width matches LH ExpBar when installed; otherwise 190 UI units.")
     Slider(category, "height", "Window height", 60, 600, 1, "Height in UI units.")
     Slider(category, "barHeight", "Bar height", 10, 30, 1, "Height of each player row.")
     Slider(category, "barSpacing", "Bar spacing", 0, 8, 1, "Space between rows.")
@@ -111,11 +128,7 @@ local function Build(category, layout)
         { title = "Bar color", prefix = "bar" },
         { title = "Thin border color", prefix = "border" },
     }) do
-        Header(layout, group.title)
-        for _, color in ipairs({ { "R", "Red" }, { "G", "Green" }, { "B", "Blue" } }) do
-            Slider(category, group.prefix .. color[1], color[2], 0, 1, 0.05,
-                "Color channel from 0 to 100 percent.", function(value) return string.format("%.0f%%", value * 100) end)
-        end
+        ColorSwatch(category, group.prefix, group.title)
         Slider(category, group.prefix .. "Alpha", group.prefix == "shadow" and "Shadow strength" or "Opacity", 0, 1, 0.05,
             "Opacity from 0 to 100 percent.", function(value) return string.format("%.0f%%", value * 100) end)
         if group.prefix == "shadow" then
