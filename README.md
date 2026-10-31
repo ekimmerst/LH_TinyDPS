@@ -45,5 +45,13 @@
 
 <p>Thanks to Sideshow and Talyrius for <a href="https://www.curseforge.com/wow/addons/tinydps">TinyDPS</a> and the inspiration behind a compact meter. LH TinyDPS is a separate display built around WoW's own meter data.</p>
 
+<h2 style="color: #73c9c4;">Changelog</h2>
+
+<p><strong>1.4.0 - Forever</strong></p>
+
+<ul>
+  <li>No gameplay changes in this Forever branch; the compact display continues to use Forever's built-in damage meter.</li>
+</ul>
+
 <hr>
-<p><sup>*</sup> Implemented with the help of Codex and GPT-6-SOL and tested by me as thoroughly as I could in the WoW beta client. Some class or race data may still need work; please report anything you notice.</p>
+<p><sup>*</sup> Implemented with the help of Codex and GPT-6-SOL. Some class or race data may still need work; please report anything you notice.</p>
