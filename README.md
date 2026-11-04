@@ -18,7 +18,7 @@
 
 <h2 style="color: #73c9c4;">More LH addons</h2>
 
-<p>Choose only the pieces you want. Each companion addon also requires LH Tweaks.</p>
+<p>Choose only the pieces you want. Most companion addons require LH Tweaks; LH NameplateQuestInfo also works without it.</p>
 
 <ul>
   <li><strong>LH AuraBars:</strong> Compact bars for buffs, debuffs and spell cooldowns.</li>
@@ -31,7 +31,7 @@
   <li><strong>LH NameplateQuestInfo:</strong> Adds quest markers and objective progress to nameplates.</li>
   <li><strong>LH NameplateThreatColors:</strong> Colors Blizzard nameplates by threat and role.</li>
   <li><strong>LH PetStats:</strong> Shows hunter pet loyalty beside the pet portrait.</li>
-  <li><strong>LH Range:</strong> Shows melee range and Shaman or Hunter spell-range zones.</li>
+  <li><strong>LH Range:</strong> Shows melee range, configurable spell-range zones for every class, and a live non-Mana resource bar in melee range.</li>
   <li><strong>LH BuffReminders:</strong> Reminds you when selected class buffs are missing.</li>
   <li><strong>LH Skills:</strong> Shows profession ranks in a movable compact bar.</li>
   <li><strong>LH Stats:</strong> Shows money, free bag slots and remaining ammo below the minimap.</li>
