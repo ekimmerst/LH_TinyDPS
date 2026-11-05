@@ -58,6 +58,7 @@ local function ColorSwatch(category, prefix, label)
     Settings.CreateColorSwatch(category, setting, "Choose the color. Use the slider below for opacity.")
 end
 local function Build(category, layout)
+    LH_LayoutProfiles:AddSetting(category, layout, addonName)
     Header(layout, "Positioning")
     Checkbox(category, "locked", "Lock TinyDPS window",
         "Disable to left-drag the window or resize it using the small circle below its right edge. Enable to keep the current position and size.", true)

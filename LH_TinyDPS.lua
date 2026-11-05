@@ -847,6 +847,12 @@ events:SetScript("OnEvent", function(_, event, name)
         if LH_TinyDPSDB.borderStyle ~= "none" and LH_TinyDPSDB.borderStyle ~= "thin"
             and LH_TinyDPSDB.borderStyle ~= "standard" then LH_TinyDPSDB.borderStyle = defaults.borderStyle end
         if LH_TinyDPSDB.session ~= "overall" and LH_TinyDPSDB.session ~= "current" then LH_TinyDPSDB.session = "overall" end
+        local profileKeys = {"position"}
+        for key in pairs(defaults) do
+            -- A selected combat session refers to this character's own meter data.
+            if key ~= "session" then profileKeys[#profileKeys + 1] = key end
+        end
+        LH_LayoutProfiles:Register(ADDON_NAME, LH_TinyDPSDB, LH_TinyDPSDB, profileKeys)
         CreateWindow()
         initialized = true
         UpdateVisibility()

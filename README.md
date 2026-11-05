@@ -16,6 +16,10 @@
 
 <p>Open <strong>Options → AddOns → LH Tweaks → LH TinyDPS</strong> to move and resize the window, change bars, colors and text, or choose when it is visible. Its minimap button can toggle the window and open settings. You can also type <code>/lh_tinydps help</code> for commands. If LH Stats is installed, the default layout sits beneath it. The default width matches LH ExpBar when installed; Reset layout applies its current width without changing a custom width until you reset.</p>
 
+<h2 style="color: #c78be6;">Settings profiles</h2>
+
+<p>Choose a character under <strong>Use settings from</strong> to share window position, size, colors, text, display mode, visibility, minimap button and other general options. LH Tweaks can apply its selected source to all LH addons. The selected combat session and the game's meter data remain individual. <strong>This character</strong> restores your own display settings.</p>
+
 <h2 style="color: #73c9c4;">More LH addons</h2>
 
 <p>Choose only the pieces you want. Most companion addons require LH Tweaks; LH NameplateQuestInfo also works without it.</p>
@@ -46,6 +50,12 @@
 <p>Thanks to Sideshow and Talyrius for <a href="https://www.curseforge.com/wow/addons/tinydps">TinyDPS</a> and the inspiration behind a compact meter. LH TinyDPS is a separate display built around WoW's own meter data.</p>
 
 <h2 style="color: #73c9c4;">Changelog</h2>
+
+<p><strong>1.5.0 - Forever and Retail</strong></p>
+
+<ul>
+  <li>Added character settings profiles for the TinyDPS window, appearance, visibility and general options. Combat sessions remain individual.</li>
+</ul>
 
 <p><strong>1.4.2 - Forever and Retail</strong></p>
 
